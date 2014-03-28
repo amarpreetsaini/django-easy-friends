@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
 
 from friends.models import Friendship, FriendshipInvitation, Blocking
 from friends.forms import InviteFriendForm, RemoveFriendForm, BlockUserForm
@@ -32,7 +33,7 @@ def list_friend_friends(request, username):
     if not friends_settings.SHOW_FRIENDS_OF_FRIEND:
         raise PermissionDenied
 
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(get_user_model(), username=username)
 
     # check if user specified by username is friend of current user
     if not Friendship.objects.are_friends(request.user, user):
@@ -50,7 +51,7 @@ def invite_friend(request, username, redirect_to_view=None, message=_("I would l
     """
     Invite user to be user friend.
     """
-    friend = get_object_or_404(User, username=username)
+    friend = get_object_or_404(get_user_model(), username=username)
     if request.method == "POST":
         form = InviteFriendForm(data=request.POST, user=request.user)
         if form.is_valid():
@@ -72,7 +73,7 @@ def remove_friend(request, username, redirect_to_view=None):
     """
     Remove user from friends.
     """
-    friend = get_object_or_404(User, username=username)
+    friend = get_object_or_404(get_user_model(), username=username)
     if request.method == "POST":
         form = RemoveFriendForm(data=request.POST, user=request.user)
         if form.is_valid():
@@ -94,7 +95,7 @@ def block_user(request, username, redirect_to_view=None):
     """
     Block user from sending invitations.
     """
-    to_user = get_object_or_404(User, username=username)
+    to_user = get_object_or_404(get_user_model(), username=username)
     if request.method == "POST":
         form = BlockUserForm(data=request.POST, user=request.user)
         if form.is_valid():
@@ -117,7 +118,7 @@ def unblock_user(request, username, redirect_to_view=None):
     """
     Unblock user from sending invitations.
     """
-    to_user = get_object_or_404(User, username=username)
+    to_user = get_object_or_404(get_user_model(), username=username)
     blocking = Blocking.objects.filter(from_user=request.user, to_user=to_user)
     blocking.delete()
 
