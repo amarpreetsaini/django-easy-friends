@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from friends.models import Friendship, FriendshipInvitation, Blocking
 
@@ -24,13 +25,13 @@ class InviteFriendForm(UserForm):
     def clean_to_user(self):
         to_username = self.cleaned_data["to_user"]
         try:
-            User.objects.get(username=to_username)
-        except User.DoesNotExist:
+            get_user_model().objects.get(username=to_username)
+        except get_user_model().DoesNotExist:
             raise forms.ValidationError(_(u"Unknown user."))
         return self.cleaned_data["to_user"]
 
     def clean(self):
-        to_user = User.objects.get(username=self.cleaned_data["to_user"])
+        to_user = get_user_model().objects.get(username=self.cleaned_data["to_user"])
         if to_user == self.user:
             raise forms.ValidationError(
                 _(u"You can't request friendship with yourself.")
@@ -63,7 +64,7 @@ class InviteFriendForm(UserForm):
         return self.cleaned_data
 
     def save(self):
-        to_user = User.objects.get(username=self.cleaned_data["to_user"])
+        to_user = get_user_model().objects.get(username=self.cleaned_data["to_user"])
         message = self.cleaned_data["message"]
         invitation = FriendshipInvitation(
             from_user=self.user,
@@ -81,13 +82,13 @@ class RemoveFriendForm(UserForm):
     def clean_to_user(self):
         to_username = self.cleaned_data["to_user"]
         try:
-            User.objects.get(username=to_username)
-        except User.DoesNotExist:
+            get_user_model().objects.get(username=to_username)
+        except get_user_model().DoesNotExist:
             raise forms.ValidationError(_(u"Unknown user."))
         return self.cleaned_data["to_user"]
 
     def clean(self):
-        to_user = User.objects.get(username=self.cleaned_data["to_user"])
+        to_user = get_user_model().objects.get(username=self.cleaned_data["to_user"])
         if not Friendship.objects.are_friends(self.user, to_user):
             raise forms.ValidationError(
                 _(u"%(username)s and you are not friends.") % {'username': to_user.username}
@@ -95,7 +96,7 @@ class RemoveFriendForm(UserForm):
         return self.cleaned_data
 
     def save(self):
-        to_user = User.objects.get(username=self.cleaned_data["to_user"])
+        to_user = get_user_model().objects.get(username=self.cleaned_data["to_user"])
         Friendship.objects.remove(self.user, to_user)
 
 
@@ -106,13 +107,13 @@ class BlockUserForm(UserForm):
     def clean_to_user(self):
         to_username = self.cleaned_data["to_user"]
         try:
-            User.objects.get(username=to_username)
-        except User.DoesNotExist:
+            get_user_model().objects.get(username=to_username)
+        except get_user_model().DoesNotExist:
             raise forms.ValidationError(_(u"Unknown user."))
         return self.cleaned_data["to_user"]
 
     def clean(self):
-        to_user = User.objects.get(username=self.cleaned_data["to_user"])
+        to_user = get_user_model().objects.get(username=self.cleaned_data["to_user"])
         if Friendship.objects.are_friends(self.user, to_user):
             raise forms.ValidationError(
                 _(u"%(username)s and you are friends. You can't block user that is your friend.") % {'username': to_user.username}
@@ -120,7 +121,7 @@ class BlockUserForm(UserForm):
         return self.cleaned_data
 
     def save(self):
-        to_user = User.objects.get(username=self.cleaned_data["to_user"])
+        to_user = get_user_model().objects.get(username=self.cleaned_data["to_user"])
         blocking = Blocking(
             from_user=self.user,
             to_user=to_user,
