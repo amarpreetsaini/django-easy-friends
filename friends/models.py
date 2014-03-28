@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import pre_delete, post_save
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from friends.utils import get_datetime_now
 from friends.managers import FriendshipManager, FriendshipInvitationManager, BlockingManager
@@ -15,8 +16,8 @@ class Friendship(models.Model):
     have both agreed to the association.
     """
 
-    from_user = models.ForeignKey(User, verbose_name=_("from user"), related_name="_unused_")
-    to_user = models.ForeignKey(User, verbose_name=_("to user"), related_name="friends")
+    from_user = models.ForeignKey(get_user_model(), verbose_name=_("from user"), related_name="_unused_")
+    to_user = models.ForeignKey(get_user_model(), verbose_name=_("to user"), related_name="friends")
     added = models.DateTimeField(_("added"), default=get_datetime_now)
 
     objects = FriendshipManager()
@@ -31,8 +32,8 @@ class Blocking(models.Model):
     (to protect from invitation spamming).
     """
 
-    from_user = models.ForeignKey(User, verbose_name=_("from user"), related_name="blocking")
-    to_user = models.ForeignKey(User, verbose_name=_("to user"), related_name="blocked_by")
+    from_user = models.ForeignKey(get_user_model(), verbose_name=_("from user"), related_name="blocking")
+    to_user = models.ForeignKey(get_user_model(), verbose_name=_("to user"), related_name="blocked_by")
     added = models.DateTimeField(_("added"), default=get_datetime_now)
 
     objects = BlockingManager()
@@ -44,8 +45,8 @@ class FriendshipInvitation(models.Model):
     associated as friends.
     """
 
-    from_user = models.ForeignKey(User, verbose_name=_("from user"), related_name="invitations_from")
-    to_user = models.ForeignKey(User, verbose_name=_("to user"), related_name="invitations_to")
+    from_user = models.ForeignKey(get_user_model(), verbose_name=_("from user"), related_name="invitations_from")
+    to_user = models.ForeignKey(get_user_model(), verbose_name=_("to user"), related_name="invitations_to")
     message = models.TextField(_("message"))
     sent = models.DateTimeField(_("sent"), default=get_datetime_now)
 
