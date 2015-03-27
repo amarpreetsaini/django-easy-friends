@@ -1,8 +1,8 @@
 ###################
-Django Easy Friends
+django-myFriends
 ###################
 
-Django Easy Friends is a friendship tool for Django framework. It has features like sending invitations, friendship creation, blocking users, importing contacts from external services and auto suggesting friends based on imported contacts. It consist of two applications: **friends** and **friends.contrib.suggestions**.
+django-myFriends is fork from django-easy-friends and is a friendship tool for Django framework. It has features like sending invitations, friendship creation, blocking users, importing contacts from external services and auto suggesting friends based on imported contacts. It consist of two applications: **friends** and **friends.contrib.suggestions**.
 
 *******************
 friends application
